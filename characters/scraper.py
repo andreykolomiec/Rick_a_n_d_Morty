@@ -1,5 +1,6 @@
 import requests
 from django.conf import settings
+from django.db import IntegrityError
 
 from characters.models import Character
 
@@ -35,7 +36,10 @@ def scrape_characters() -> list[Character]:
 #  ф-ція, яка зберігає всіх проскраплених персонажів (characters)
 def save_characters(characters: list[Character]) -> None:
     for character in characters:
-        character.save()
+        try:
+            character.save()
+        except IntegrityError:
+            print(f"Character with api_id: {character.api_id} already exists in DB!")
 
 
 # ф-ція, яка з початку скрапить всіх персонажів (characters), а потім зберигає їх у БД
